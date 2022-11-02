@@ -61,14 +61,44 @@ public class Resta01 {
         }
     }
 
+    private void realizaJogada(int linhaPeca, int colunaPeca, int linhaBranco, int colunaBranco) {
+
+    }
+
+    private boolean interpretaEntrada(String entrada) {
+        boolean jogada = false;
+        if (entrada.startsWith("(") && entrada.endsWith(")")) {
+            entrada = entrada.substring(1, entrada.length() - 1);
+            String[] argumentos = entrada.split(", ");
+            if (argumentos.length == 4) {
+                try {
+                    this.realizaJogada(
+                            Integer.parseInt(argumentos[0]),
+                            Integer.parseInt(argumentos[1]),
+                            Integer.parseInt(argumentos[2]),
+                            Integer.parseInt(argumentos[3]));
+                } catch (NumberFormatException ex) {
+                    System.out.println("ERRO: insira argumentos numéricos!");
+                }
+            }
+        } else if (entrada.compareToIgnoreCase("reiniciar") == 0) {
+            this.populaTabuleiro();
+        } else if (entrada.compareToIgnoreCase("sair") == 0) {
+            return false;
+        }
+        return true;
+    }
+
     private void interfaceJogo() {
         String entrada = "";
         Scanner teclado = new Scanner(System.in);
         do {
             this.imprimeTabuleiro();
-            System.out.print("Entrada: ");
+            System.out.print("\nEntrada: ");
             entrada = teclado.nextLine();
-            System.out.println(entrada);
+            this.interpretaEntrada(entrada);
+
+            System.out.println();
         } while (entrada.compareToIgnoreCase("sair") != 0);
     }
 
