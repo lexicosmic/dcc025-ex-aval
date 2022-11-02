@@ -4,6 +4,8 @@
  */
 package com.devgabmal.resta01;
 
+import java.util.Scanner;
+
 /**
  *
  * @author gabriel
@@ -59,8 +61,19 @@ public class Resta01 {
         }
     }
 
+    private void interfaceJogo() {
+        String entrada = "";
+        Scanner teclado = new Scanner(System.in);
+        do {
+            this.imprimeTabuleiro();
+            System.out.print("Entrada: ");
+            entrada = teclado.nextLine();
+            System.out.println(entrada);
+        } while (entrada.compareToIgnoreCase("sair") != 0);
+    }
+
     public static void main(String[] args) {
         Resta01 jogo = new Resta01();
-        jogo.imprimeTabuleiro();
+        jogo.interfaceJogo();
     }
 }
