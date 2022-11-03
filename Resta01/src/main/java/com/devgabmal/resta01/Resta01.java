@@ -68,7 +68,13 @@ public class Resta01 {
         }
     }
 
-    private boolean validaMovimento(int[] args) {
+    private void atualizaPosicoes(int linhaPeca, int colunaPeca, int linhaMeio, int colunaMeio, int linhaBranco, int colunaBranco) {
+        this.tabuleiro[linhaPeca][colunaPeca] = 0;
+        this.tabuleiro[linhaMeio][colunaMeio] = 0;
+        this.tabuleiro[linhaBranco][colunaBranco] = 1;
+    }
+
+    private boolean realizaMovimento(int[] args) {
         int linhaPeca, colunaPeca, linhaBranco, colunaBranco;
         linhaPeca = args[0];
         colunaPeca = args[1];
@@ -86,6 +92,7 @@ public class Resta01 {
                     int linhaMeio = linhaPeca;
                     int colunaMeio = (colunaPeca + colunaBranco) / 2;
                     if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
+                        this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
                         return true;
                     }
                 }
@@ -96,6 +103,7 @@ public class Resta01 {
                     int linhaMeio = (linhaPeca + linhaBranco) / 2;
                     int colunaMeio = colunaPeca;
                     if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
+                        this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
                         return true;
                     }
                 }
@@ -119,12 +127,11 @@ public class Resta01 {
                 System.out.println("ERRO: as posições estão fora do tabuleiro!");
                 return;
             }
-            if (!this.validaMovimento(args)) {
+            if (!this.realizaMovimento(args)) {
                 System.out.println("ERRO: o movimento é inválido!");
                 return;
             }
 
-            System.out.println("realizou");
         } catch (NumberFormatException ex) {
             System.out.println("ERRO: insira argumentos numéricos!");
         }
