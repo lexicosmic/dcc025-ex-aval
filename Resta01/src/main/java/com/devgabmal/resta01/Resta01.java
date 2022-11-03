@@ -14,10 +14,12 @@ public class Resta01 {
 
     int[][] tabuleiro;
     private final int dimensao = 7;
+    Scanner teclado;
 
     public Resta01() {
         this.tabuleiro = new int[dimensao][dimensao];
         this.populaTabuleiro();
+        this.teclado = new Scanner(System.in);
     }
 
     private boolean validaIndice(int indice) {
@@ -74,7 +76,7 @@ public class Resta01 {
         this.tabuleiro[linhaBranco][colunaBranco] = 1;
     }
 
-    private boolean realizaMovimento(int[] args) {
+    private boolean realizaMovimento(int[] args, boolean efetivar) {
         int linhaPeca, colunaPeca, linhaBranco, colunaBranco;
         linhaPeca = args[0];
         colunaPeca = args[1];
@@ -82,7 +84,7 @@ public class Resta01 {
         colunaBranco = args[3];
 
         // Posições são como descritas nos argumentos
-        if ((this.tabuleiro[linhaPeca][colunaPeca] == 1)
+        if (this.tabuleiro[linhaPeca][colunaPeca] == 1
                 && this.tabuleiro[linhaBranco][colunaBranco] == 0) {
 
             // Horizontal
@@ -92,7 +94,9 @@ public class Resta01 {
                     int linhaMeio = linhaPeca;
                     int colunaMeio = (colunaPeca + colunaBranco) / 2;
                     if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
-                        this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
+                        if (efetivar) {
+                            this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
+                        }
                         return true;
                     }
                 }
@@ -103,13 +107,32 @@ public class Resta01 {
                     int linhaMeio = (linhaPeca + linhaBranco) / 2;
                     int colunaMeio = colunaPeca;
                     if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
-                        this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
+                        if (efetivar) {
+                            this.atualizaPosicoes(linhaPeca, colunaPeca, linhaMeio, colunaMeio, linhaBranco, colunaBranco);
+                        }
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private boolean validaJogada(int[] args, boolean efetivar) {
+        if (!(this.validaPosicao(args[0], args[1])
+                && this.validaPosicao(args[2], args[3]))) {
+            if (efetivar) {
+                System.out.println("ERRO: as posições estão fora do tabuleiro!");
+            }
+            return false;
+        }
+        if (!this.realizaMovimento(args, efetivar)) {
+            if (efetivar) {
+                System.out.println("ERRO: o movimento é inválido!");
+            }
+            return false;
+        }
+        return true;
     }
 
     private void realizaJogada(String[] argumentos) {
@@ -121,16 +144,7 @@ public class Resta01 {
                 args[i] = Integer.parseInt(argumentos[i]);
             }
 
-            // Validações
-            if (!(this.validaPosicao(args[0], args[1])
-                    && this.validaPosicao(args[2], args[3]))) {
-                System.out.println("ERRO: as posições estão fora do tabuleiro!");
-                return;
-            }
-            if (!this.realizaMovimento(args)) {
-                System.out.println("ERRO: o movimento é inválido!");
-                return;
-            }
+            this.validaJogada(args, true);
 
         } catch (NumberFormatException ex) {
             System.out.println("ERRO: insira argumentos numéricos!");
@@ -152,21 +166,86 @@ public class Resta01 {
         return true;
     }
 
+    private boolean verificaJogadas(int linha, int coluna) {
+        boolean haJogadasPossiveis = false;
+        if (linha < dimensao - 1) {
+            haJogadasPossiveis = haJogadasPossiveis || this.validaJogada(new int[]{linha, coluna, linha + 2, coluna}, false);
+        }
+        if (linha > 1) {
+            haJogadasPossiveis = haJogadasPossiveis || this.validaJogada(new int[]{linha, coluna, linha - 2, coluna}, false);
+        }
+        if (coluna < dimensao - 2) {
+            haJogadasPossiveis = haJogadasPossiveis || this.validaJogada(new int[]{linha, coluna, linha, coluna + 2}, false);
+        }
+        if (coluna > 1) {
+            haJogadasPossiveis = haJogadasPossiveis || this.validaJogada(new int[]{linha, coluna, linha, coluna - 2}, false);
+        }
+
+        return haJogadasPossiveis;
+    }
+
+    private boolean verificaFimDeJogo() {
+        int qtdUns = 0;
+        boolean haJogadasPossiveis = false;
+
+        for (int i = 0; i < dimensao; i++) {
+            for (int j = 0; j < dimensao; j++) {
+                if (tabuleiro[i][j] == 1) {
+                    qtdUns++;
+                    haJogadasPossiveis = haJogadasPossiveis
+                            || (this.verificaJogadas(i, j));
+                }
+            }
+        }
+
+        if (qtdUns == 1) {
+            System.out.println("Vitória! Parabéns:D");
+            return true;
+        } else if (!haJogadasPossiveis) {
+            System.out.println("Não há mais jogadas possíveis T.T");
+            return true;
+        }
+
+        return false;
+    }
+
     private void interfaceJogo() {
         String entrada = "";
-        Scanner teclado = new Scanner(System.in);
+        boolean continua = true;
         do {
             this.imprimeTabuleiro();
-            System.out.print("\nEntrada: ");
-            entrada = teclado.nextLine();
-            this.interpretaEntrada(entrada);
+            continua = !this.verificaFimDeJogo();
+            if (continua) {
+                System.out.print("\nEntrada: ");
+                entrada = teclado.nextLine();
+                continua = this.interpretaEntrada(entrada);
+            }
 
             System.out.println("=======================\n");
-        } while (entrada.compareToIgnoreCase("sair") != 0);
+        } while (continua);
     }
 
     public static void main(String[] args) {
         Resta01 jogo = new Resta01();
-        jogo.interfaceJogo();
+        boolean continua = true;
+        boolean respondido = false;
+        do {
+            jogo.interfaceJogo();
+            do {
+                System.out.print("Deseja jogar novamente? [S/N] ");
+                String entrada = jogo.teclado.nextLine();
+                if (entrada.compareToIgnoreCase("N") == 0) {
+                    continua = false;
+                    respondido = true;
+                } else if (entrada.compareToIgnoreCase("S") == 0) {
+                    continua = true;
+                    respondido = true;
+                    jogo.populaTabuleiro();
+                    System.out.println();
+                }
+            } while (!respondido);
+            respondido = false;
+        } while (continua);
+        System.out.println("Fim de Jogo!");
     }
 }
