@@ -20,11 +20,18 @@ public class Resta01 {
         this.populaTabuleiro();
     }
 
+    private boolean validaIndice(int indice) {
+        return (indice == 2 || indice == 3 || indice == 4);
+    }
+
+    private boolean validaPosicao(int linha, int coluna) {
+        return (this.validaIndice(linha) || this.validaIndice(coluna));
+    }
+
     private void populaTabuleiro() {
         for (int i = 0; i < dimensao; i++) {
             for (int j = 0; j < dimensao; j++) {
-                if ((i == 2 || i == 3 || i == 4)
-                        || (j == 2 || j == 3 || j == 4)) {
+                if (this.validaPosicao(i, j)) {
                     tabuleiro[i][j] = 1;
                 } else {
                     tabuleiro[i][j] = -1;
@@ -61,25 +68,66 @@ public class Resta01 {
         }
     }
 
-    private void realizaJogada(int linhaPeca, int colunaPeca, int linhaBranco, int colunaBranco) {
+    private boolean validaMovimento(int[] args) {
+        int linhaPeca, colunaPeca, linhaBranco, colunaBranco;
+        linhaPeca = args[0];
+        colunaPeca = args[1];
+        linhaBranco = args[2];
+        colunaBranco = args[3];
 
+        // Posições são como descritas nos argumentos
+        if ((this.tabuleiro[linhaPeca][colunaPeca] == 1)
+                && this.tabuleiro[linhaBranco][colunaBranco] == 0) {
+
+            // Horizontal
+            if (linhaPeca == linhaBranco) {
+                int distanciaColunas = colunaBranco - colunaPeca;
+                if (Math.abs(distanciaColunas) == 2) {
+                    return true;
+                }
+            } // Vertical
+            else if (colunaPeca == colunaBranco) {
+                int distanciaLinhas = linhaBranco - linhaPeca;
+                if (Math.abs(distanciaLinhas) == 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void realizaJogada(String[] argumentos) {
+        try {
+            int[] args = new int[4];
+
+            // Converte argumentos em inteiros
+            for (int i = 0; i < 4; i++) {
+                args[i] = Integer.parseInt(argumentos[i]);
+            }
+
+            // Validações
+            if (!(this.validaPosicao(args[0], args[1])
+                    && this.validaPosicao(args[2], args[3]))) {
+                System.out.println("ERRO: as posições estão fora do tabuleiro!");
+                return;
+            }
+            if (!this.validaMovimento(args)) {
+                System.out.println("ERRO: o movimento é inválido!");
+                return;
+            }
+
+            System.out.println("realizou");
+        } catch (NumberFormatException ex) {
+            System.out.println("ERRO: insira argumentos numéricos!");
+        }
     }
 
     private boolean interpretaEntrada(String entrada) {
-        boolean jogada = false;
         if (entrada.startsWith("(") && entrada.endsWith(")")) {
             entrada = entrada.substring(1, entrada.length() - 1);
             String[] argumentos = entrada.split(", ");
             if (argumentos.length == 4) {
-                try {
-                    this.realizaJogada(
-                            Integer.parseInt(argumentos[0]),
-                            Integer.parseInt(argumentos[1]),
-                            Integer.parseInt(argumentos[2]),
-                            Integer.parseInt(argumentos[3]));
-                } catch (NumberFormatException ex) {
-                    System.out.println("ERRO: insira argumentos numéricos!");
-                }
+                this.realizaJogada(argumentos);
             }
         } else if (entrada.compareToIgnoreCase("reiniciar") == 0) {
             this.populaTabuleiro();
