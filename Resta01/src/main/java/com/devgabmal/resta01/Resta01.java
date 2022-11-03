@@ -83,13 +83,21 @@ public class Resta01 {
             if (linhaPeca == linhaBranco) {
                 int distanciaColunas = colunaBranco - colunaPeca;
                 if (Math.abs(distanciaColunas) == 2) {
-                    return true;
+                    int linhaMeio = linhaPeca;
+                    int colunaMeio = (colunaPeca + colunaBranco) / 2;
+                    if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
+                        return true;
+                    }
                 }
             } // Vertical
             else if (colunaPeca == colunaBranco) {
                 int distanciaLinhas = linhaBranco - linhaPeca;
                 if (Math.abs(distanciaLinhas) == 2) {
-                    return true;
+                    int linhaMeio = (linhaPeca + linhaBranco) / 2;
+                    int colunaMeio = colunaPeca;
+                    if (this.tabuleiro[linhaMeio][colunaMeio] == 1) {
+                        return true;
+                    }
                 }
             }
         }
@@ -146,7 +154,7 @@ public class Resta01 {
             entrada = teclado.nextLine();
             this.interpretaEntrada(entrada);
 
-            System.out.println();
+            System.out.println("=======================\n");
         } while (entrada.compareToIgnoreCase("sair") != 0);
     }
 
