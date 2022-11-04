@@ -12,9 +12,9 @@ import java.util.Scanner;
  */
 public class Resta01 {
 
-    int[][] tabuleiro;
-    private final int dimensao = 7;
-    Scanner teclado;
+    private int[][] tabuleiro;
+    private static final int dimensao = 7;
+    private Scanner teclado;
 
     public Resta01() {
         this.tabuleiro = new int[dimensao][dimensao];
@@ -23,11 +23,16 @@ public class Resta01 {
     }
 
     private boolean validaIndice(int indice) {
+        return (indice >= 0 && indice < dimensao);
+    }
+
+    private boolean verificaCentroCruz(int indice) {
         return (indice == 2 || indice == 3 || indice == 4);
     }
 
     private boolean validaPosicao(int linha, int coluna) {
-        return (this.validaIndice(linha) || this.validaIndice(coluna));
+        return (this.validaIndice(linha) && this.validaIndice(coluna)
+                && (this.verificaCentroCruz(linha) || this.verificaCentroCruz(coluna)));
     }
 
     private void populaTabuleiro() {
