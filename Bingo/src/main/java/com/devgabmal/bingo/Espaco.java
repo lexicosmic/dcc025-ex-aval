@@ -8,14 +8,14 @@ package com.devgabmal.bingo;
  *
  * @author devgabmal
  */
-public class Espaco {
+public interface Espaco {
 
-    private int numero;
-    private boolean marcado;
+    public void imprime();
 
-    public Espaco(int numero) {
-        this.numero = numero;
-        this.marcado = false;
-    }
+    public boolean isMarcado();
+
+    public void marca();
+
+    public boolean compara(int numero);
 
 }

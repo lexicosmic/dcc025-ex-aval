@@ -19,21 +19,42 @@ public class Bingo {
         return -1;
     }
 
+    private static int converteStringEmInteiro(String entrada) {
+        try {
+            int convertido = Integer.parseInt(entrada);
+            if (convertido > 0) {
+                return convertido;
+            } else {
+                System.out.println("ERRO: digite um numero inteiro positivo!");
+            }
+        } catch (NumberFormatException ex) {
+            System.out.println("ERRO: digite um numero inteiro!");
+        }
+        return -1;
+    }
+
     public static void main(String[] args) {
         Scanner teclado = new Scanner(System.in);
         String entrada = "";
         int tipoJogo = -1;
+        int quantidadeCartelas = -1;
 
         do {
             System.out.println("Digite o modo de jogo:");
             System.out.println("1 - Linha/Coluna");
             System.out.println("2 - Cruz");
-
             entrada = teclado.nextLine();
             tipoJogo = Bingo.determinaTipoJogo(entrada);
         } while (tipoJogo == -1);
 
-        Jogo jogo = new Jogo(tipoJogo);
+        do {
+            System.out.println("Quantas pessoas vao jogar?");
+            entrada = teclado.nextLine();
+            quantidadeCartelas = Bingo.converteStringEmInteiro(entrada);
+        } while (quantidadeCartelas == -1);
+        System.out.println();
 
+        Jogo jogo = new Jogo(tipoJogo, quantidadeCartelas, teclado);
+        jogo.inicia();
     }
 }
